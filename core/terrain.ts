@@ -2,6 +2,7 @@
 // so the world can be effectively unbounded while saved state stays small.
 
 export type Terrain = "grass" | "forest" | "water" | "rock";
+import { hasboat, hasboots } from "../game/hud.ts";
 
 export function terrainAt(seed: number, x: number, y: number): Terrain {
   const raw = 0.65 * noise(seed, x, y, 9) + 0.35 * noise(seed + 1, x, y, 3);
@@ -14,7 +15,13 @@ export function terrainAt(seed: number, x: number, y: number): Terrain {
 }
 
 export function isPassable(terrain: Terrain): boolean {
-  return terrain !== "water" && terrain !== "rock";
+  let iswaterpassible = terrain !== "water";
+  if (hasboat == true) iswaterpassible = true;
+
+  let isrockpassible = terrain !== "rock";
+  if (hasboots == true) isrockpassible = true;
+
+  return iswaterpassible && isrockpassible;
 }
 
 // Value noise: random numbers at coarse grid points, blended between them, so
@@ -56,6 +63,6 @@ function gridValue(seed: number, x: number, y: number): number {
 export function itemAt(seed: number, x: number, y: number) {
   const raw = 0.65 * noise(seed, x, y, 11) + 0.35 * noise(seed + 1, x, y, 4);
   const itemspawn = 0.5 + (raw - 0.5) * Math.min(1, Math.hypot(x, y) / 10);
-  if (itemspawn < 0.45) return true;
+  if (itemspawn < 0.5) return true;
   return false;
 }

@@ -141,51 +141,63 @@ export class GridView extends Phaser.Scene {
           CELL_SIZE - 1,
           CELL_SIZE - 1,
         );
-        if (itemAt(this.seed, x, y) && x % 7 == 0 && y % 6 == 0) {
-          //doesn't spawn the item if its already collected
-          let collected = false;
-          for (let i = 0; i < spaceswithoutitems.length; i++) {
-            if (spaceswithoutitems[i].x == x && spaceswithoutitems[i].y == y) {
-              collected = true;
-              break;
-            }
-          }
+        if (itemAt(this.seed, x, y)) {
+          //items spawn at different rates depending on terrain type
+          const type = terrainAt(this.seed, x, y);
+          let statement: boolean = false;
+          if (type == "grass") statement = x % 7 == 0 && y % 6 == 0;
+          if (type == "forest") statement = x % 6 == 0 && y % 5 == 0;
+          if (type == "water") statement = x % 5 == 0 && y % 4 == 0;
+          if (type == "rock") statement = x % 4 == 0 && y % 3 == 0;
 
-          const currentterrain = terrainAt(this.seed, x, y);
-          if (collected == false) {
-            //if were on the space with an item, collect it and mark it as collected
-            if (x == centerX && y == centerY) {
-              sounds.play("chime");
-              spaceswithoutitems.push({ x: x, y: y });
-              if (currentterrain == "grass") {
-                iteminventory.string += 1;
-              } else if (currentterrain == "forest") {
-                iteminventory.wood += 1;
-              } else if (currentterrain == "water") {
-                iteminventory.leather += 1;
-              } else if (currentterrain == "rock") {
-                iteminventory.iron += 1;
+          if (statement) {
+            //doesn't spawn the item if its already collected
+            let collected = false;
+            for (let i = 0; i < spaceswithoutitems.length; i++) {
+              if (
+                spaceswithoutitems[i].x == x && spaceswithoutitems[i].y == y
+              ) {
+                collected = true;
+                break;
               }
             }
 
-            if (currentterrain == "grass") {
-              this.ground.fillStyle(0xD3D3D3);
-            } else if (currentterrain == "forest") {
-              this.ground.fillStyle(0x8B4513);
-            } else if (currentterrain == "water") {
-              this.ground.fillStyle(0xFFB6C1);
-            } else if (currentterrain == "rock") {
-              this.ground.fillStyle(0x00008B);
-            }
+            const currentterrain = terrainAt(this.seed, x, y);
+            if (collected == false) {
+              //if were on the space with an item, collect it and mark it as collected
+              if (x == centerX && y == centerY) {
+                sounds.play("unlock");
+                spaceswithoutitems.push({ x: x, y: y });
+                if (currentterrain == "grass") {
+                  iteminventory.string += 1;
+                } else if (currentterrain == "forest") {
+                  iteminventory.wood += 1;
+                } else if (currentterrain == "water") {
+                  iteminventory.leather += 1;
+                } else if (currentterrain == "rock") {
+                  iteminventory.iron += 1;
+                }
+              }
 
-            this.ground.fillTriangle(
-              x * CELL_SIZE + CELL_SIZE * 0.2,
-              y * CELL_SIZE + CELL_SIZE * 0.8,
-              x * CELL_SIZE + CELL_SIZE * 0.8,
-              y * CELL_SIZE + CELL_SIZE * 0.8,
-              x * CELL_SIZE + CELL_SIZE * 0.5,
-              y * CELL_SIZE + CELL_SIZE * 0.3,
-            );
+              if (currentterrain == "grass") {
+                this.ground.fillStyle(0xD3D3D3);
+              } else if (currentterrain == "forest") {
+                this.ground.fillStyle(0x8B4513);
+              } else if (currentterrain == "water") {
+                this.ground.fillStyle(0xFFB6C1);
+              } else if (currentterrain == "rock") {
+                this.ground.fillStyle(0x00008B);
+              }
+
+              this.ground.fillTriangle(
+                x * CELL_SIZE + CELL_SIZE * 0.2,
+                y * CELL_SIZE + CELL_SIZE * 0.8,
+                x * CELL_SIZE + CELL_SIZE * 0.8,
+                y * CELL_SIZE + CELL_SIZE * 0.8,
+                x * CELL_SIZE + CELL_SIZE * 0.5,
+                y * CELL_SIZE + CELL_SIZE * 0.3,
+              );
+            }
           }
         }
       }

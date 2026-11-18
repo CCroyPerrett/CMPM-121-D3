@@ -2,7 +2,7 @@
 // Input, the HUD, sound, and the order of events all live outside it.
 import Phaser from "phaser";
 import type { Cell, GameEvent, GameState, Terrain } from "../../core/mod.ts";
-import { terrainAt } from "../../core/mod.ts";
+import { itemAt, terrainAt } from "../../core/mod.ts";
 
 export const CELL_SIZE = 32;
 const VIEW_WIDTH = 800;
@@ -11,6 +11,13 @@ const WALK_MS = 120;
 const BUMP_MS = 60;
 const MARKER_COLOR = 0xf5e6a8;
 const BUMP_COLOR = 0xe0533d;
+//const iteminventory = [0, 0, 0, 0];
+
+interface spaces {
+  x: number;
+  y: number;
+}
+const spaceswithoutitems: spaces[] = [];
 
 const TERRAIN_COLORS: Record<Terrain, number> = {
   grass: 0x5d9e4a,
@@ -133,6 +140,33 @@ export class GridView extends Phaser.Scene {
           CELL_SIZE - 1,
           CELL_SIZE - 1,
         );
+        if (itemAt(this.seed, x, y) && x % 7 == 0 && y % 6 == 0) {
+          //doesn't spawn the item if its already collected
+          let collected = false;
+          for (let i = 0; i < spaceswithoutitems.length; i++) {
+            if (spaceswithoutitems[i].x == x && spaceswithoutitems[i].y == y) {
+              collected = true;
+              break;
+            }
+          }
+
+          //if were on the space with an item, collect it and mark it as collected
+          if (collected == false) {
+            if (x == centerX && y == centerY) {
+              spaceswithoutitems.push({ x: x, y: y });
+            }
+
+            //draws item on the ground otherwise
+            console.log("spawning item at x: " + x + " and y: " + y);
+            this.ground.fillStyle(0xFFB6C1);
+            this.ground.fillRect(
+              x * CELL_SIZE + CELL_SIZE / 4,
+              y * CELL_SIZE + CELL_SIZE / 3,
+              CELL_SIZE - 15,
+              CELL_SIZE - 20,
+            );
+          }
+        }
       }
     }
   }

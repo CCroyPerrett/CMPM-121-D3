@@ -31,5 +31,6 @@ export class Hud {
   private showPosition(x: number, y: number) {
     element("position").textContent = `${x}, ${y}`;
     element("terrain").textContent = terrainAt(this.seed, x, y);
+    element("inventory").textContent = "(empty)";
   }
 }

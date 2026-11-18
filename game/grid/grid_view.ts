@@ -3,6 +3,7 @@
 import Phaser from "phaser";
 import type { Cell, GameEvent, GameState, Terrain } from "../../core/mod.ts";
 import { itemAt, terrainAt } from "../../core/mod.ts";
+import { sounds } from "../main.ts";
 
 export const CELL_SIZE = 32;
 const VIEW_WIDTH = 800;
@@ -150,29 +151,40 @@ export class GridView extends Phaser.Scene {
             }
           }
 
-          //if were on the space with an item, collect it and mark it as collected
+          const currentterrain = terrainAt(this.seed, x, y);
           if (collected == false) {
+            //if were on the space with an item, collect it and mark it as collected
             if (x == centerX && y == centerY) {
+              sounds.play("chime");
               spaceswithoutitems.push({ x: x, y: y });
-              if (terrainAt(this.seed, x, y) == "grass") {
+              if (currentterrain == "grass") {
                 iteminventory.string += 1;
-              } else if (terrainAt(this.seed, x, y) == "forest") {
+              } else if (currentterrain == "forest") {
                 iteminventory.wood += 1;
-              } else if (terrainAt(this.seed, x, y) == "water") {
+              } else if (currentterrain == "water") {
                 iteminventory.leather += 1;
-              } else if (terrainAt(this.seed, x, y) == "rock") {
+              } else if (currentterrain == "rock") {
                 iteminventory.iron += 1;
               }
             }
 
-            //draws item on the ground otherwise
-            console.log("spawning item at x: " + x + " and y: " + y);
-            this.ground.fillStyle(0xFFB6C1);
-            this.ground.fillRect(
-              x * CELL_SIZE + CELL_SIZE / 4,
-              y * CELL_SIZE + CELL_SIZE / 3,
-              CELL_SIZE - 15,
-              CELL_SIZE - 20,
+            if (currentterrain == "grass") {
+              this.ground.fillStyle(0xD3D3D3);
+            } else if (currentterrain == "forest") {
+              this.ground.fillStyle(0x8B4513);
+            } else if (currentterrain == "water") {
+              this.ground.fillStyle(0xFFB6C1);
+            } else if (currentterrain == "rock") {
+              this.ground.fillStyle(0x00008B);
+            }
+
+            this.ground.fillTriangle(
+              x * CELL_SIZE + CELL_SIZE * 0.2,
+              y * CELL_SIZE + CELL_SIZE * 0.8,
+              x * CELL_SIZE + CELL_SIZE * 0.8,
+              y * CELL_SIZE + CELL_SIZE * 0.8,
+              x * CELL_SIZE + CELL_SIZE * 0.5,
+              y * CELL_SIZE + CELL_SIZE * 0.3,
             );
           }
         }

@@ -14,7 +14,7 @@ const seed = Number(new URLSearchParams(location.search).get("seed")) || 121;
 
 const state = newGame(seed);
 const hud = new Hud(state);
-const sounds = new Sounds(
+export const sounds = new Sounds(
   document.getElementById("mute") as HTMLButtonElement,
 );
 const grid = await startGridView(document.getElementById("grid")!, state);

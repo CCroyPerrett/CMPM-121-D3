@@ -70,7 +70,7 @@ export class Sounds {
     }
   }
 
-  private play(sound: SoundName) {
+  public play(sound: SoundName) {
     const { context } = this;
     if (!context || this.muted) return;
     for (const { frequency, seconds, wave, at = 0 } of NOTES[sound]) {

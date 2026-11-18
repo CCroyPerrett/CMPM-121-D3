@@ -56,6 +56,6 @@ function gridValue(seed: number, x: number, y: number): number {
 export function itemAt(seed: number, x: number, y: number) {
   const raw = 0.65 * noise(seed, x, y, 11) + 0.35 * noise(seed + 1, x, y, 4);
   const itemspawn = 0.5 + (raw - 0.5) * Math.min(1, Math.hypot(x, y) / 10);
-  if (itemspawn < 0.4) return true;
+  if (itemspawn < 0.45) return true;
   return false;
 }

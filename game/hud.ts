@@ -9,6 +9,7 @@ export let hascompass = false;
 let knowboat = false;
 let knowboots = false;
 let knowcompass = false;
+let wongame = false;
 
 function element(id: string): HTMLElement {
   return document.getElementById(id)!;
@@ -55,6 +56,8 @@ export class Hud {
           this.updateItems();
           this.updateInventory();
           sounds.play("chime");
+        } else {
+          sounds.play("bump");
         }
       });
       element("recipies").appendChild(button);
@@ -71,6 +74,8 @@ export class Hud {
           this.updateItems();
           this.updateInventory();
           sounds.play("chime");
+        } else {
+          sounds.play("bump");
         }
       });
       element("recipies").appendChild(button);
@@ -91,6 +96,9 @@ export class Hud {
           this.updateItems();
           this.updateInventory();
           sounds.play("chime");
+          if (wongame == false) this.Win();
+        } else {
+          sounds.play("bump");
         }
       });
       element("recipies").appendChild(button);
@@ -98,6 +106,15 @@ export class Hud {
     }
 
     this.updateItems();
+  }
+
+  private Win() {
+    wongame = true;
+    const wintext = document.createElement("h3");
+    wintext.textContent =
+      "You win! Thank you for helping me find my way home :D";
+    document.body.appendChild(wintext);
+    sounds.play("win");
   }
 
   private updateItems() {

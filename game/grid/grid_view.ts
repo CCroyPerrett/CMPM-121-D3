@@ -11,7 +11,7 @@ const WALK_MS = 120;
 const BUMP_MS = 60;
 const MARKER_COLOR = 0xf5e6a8;
 const BUMP_COLOR = 0xe0533d;
-//const iteminventory = [0, 0, 0, 0];
+export const iteminventory = { string: 0, wood: 0, leather: 0, iron: 0 };
 
 interface spaces {
   x: number;
@@ -154,6 +154,15 @@ export class GridView extends Phaser.Scene {
           if (collected == false) {
             if (x == centerX && y == centerY) {
               spaceswithoutitems.push({ x: x, y: y });
+              if (terrainAt(this.seed, x, y) == "grass") {
+                iteminventory.string += 1;
+              } else if (terrainAt(this.seed, x, y) == "forest") {
+                iteminventory.wood += 1;
+              } else if (terrainAt(this.seed, x, y) == "water") {
+                iteminventory.leather += 1;
+              } else if (terrainAt(this.seed, x, y) == "rock") {
+                iteminventory.iron += 1;
+              }
             }
 
             //draws item on the ground otherwise

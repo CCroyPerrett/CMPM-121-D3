@@ -1,4 +1,5 @@
 import { type GameEvent, type GameState, terrainAt } from "../core/mod.ts";
+import { iteminventory } from "./grid/grid_view.ts";
 
 function element(id: string): HTMLElement {
   return document.getElementById(id)!;
@@ -31,6 +32,8 @@ export class Hud {
   private showPosition(x: number, y: number) {
     element("position").textContent = `${x}, ${y}`;
     element("terrain").textContent = terrainAt(this.seed, x, y);
-    element("inventory").textContent = "(empty)";
+    element("inventory").textContent = "String: " + iteminventory.string +
+      ", Wood: " + iteminventory.wood + ", Leather: " + iteminventory.leather +
+      ", Iron: " + iteminventory.iron;
   }
 }

@@ -8,11 +8,14 @@ export type Cell = { x: number; y: number };
 
 export type Direction = "north" | "south" | "east" | "west";
 
+export type ItemType = "string" | "wood" | "leather" | "iron";
+
 // Plain data that survives JSON. Terrain is absent because the seed can recompute
 // it: besides the seed, only what the player has caused belongs here.
 export type GameState = {
   seed: number;
   player: Cell;
+  inventory: Record<ItemType, number>;
 };
 
 // Command: https://gameprogrammingpatterns.com/command.html
@@ -30,9 +33,16 @@ const STEPS: Record<Direction, Cell> = {
   west: { x: -1, y: 0 },
 };
 
+const initInventory: Record<ItemType, number> = {
+  string: 0,
+  wood: 0,
+  leather: 0,
+  iron: 0,
+};
+
 // Singleton, avoided on purpose: tests make as many games as they need. https://gameprogrammingpatterns.com/singleton.html
 export function newGame(seed: number): GameState {
-  return { seed, player: { x: 0, y: 0 } };
+  return { seed, player: { x: 0, y: 0 }, inventory: initInventory };
 }
 
 // The single way in. It updates the state it is given and returns the events.

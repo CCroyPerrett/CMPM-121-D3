@@ -4,6 +4,13 @@
 export type Terrain = "grass" | "forest" | "water" | "rock";
 import { hasboat, hasboots } from "../game/hud.ts";
 
+const terrainYields: Record<Terrain, number> = { // yields based on grid_view rates
+  grass: 0.024, // 7 * 6 = 42, 1 in 42 grass cells -> 2.4% spawn rate
+  forest: 0.033,
+  water: 0.05,
+  rock: 0.083,
+};
+
 export function terrainAt(seed: number, x: number, y: number): Terrain {
   const raw = 0.65 * noise(seed, x, y, 9) + 0.35 * noise(seed + 1, x, y, 3);
   // Every game starts at the origin, so flatten the land there. Otherwise some

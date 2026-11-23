@@ -3,12 +3,13 @@
 
 export type Terrain = "grass" | "forest" | "water" | "rock";
 import { hasboat, hasboots } from "../game/hud.ts";
+// import { ItemType } from "./rules.ts";
 
-const terrainYields: Record<Terrain, number> = { // yields based on grid_view rates
-  grass: 0.024, // 7 * 6 = 42, 1 in 42 grass cells -> 2.4% spawn rate
-  forest: 0.033,
-  water: 0.05,
-  rock: 0.083,
+export const terrainYields: Record<Terrain, string> = {
+  grass: "string",
+  forest: "wood",
+  water: "leather",
+  rock: "iron",
 };
 
 export function terrainAt(seed: number, x: number, y: number): Terrain {

@@ -10,7 +10,7 @@ const VIEW_WIDTH = 800;
 const VIEW_HEIGHT = 600;
 const WALK_MS = 120;
 const BUMP_MS = 60;
-const MARKER_COLOR = 0xf5e6a8;
+const MARKER_COLOR = 0xba8f4f; // #f5e6a8 #ba8f4f
 const BUMP_COLOR = 0xe0533d;
 export const iteminventory = { string: 0, wood: 0, leather: 0, iron: 0 };
 
@@ -45,7 +45,7 @@ export class GridView extends Phaser.Scene {
   private readonly seed: number;
   private readonly start: Cell;
   private ground!: Phaser.GameObjects.Graphics;
-  private marker!: Phaser.GameObjects.Arc;
+  private marker!: Phaser.GameObjects.Rectangle;
 
   constructor(state: GameState) {
     super("grid");
@@ -56,7 +56,13 @@ export class GridView extends Phaser.Scene {
   create() {
     this.ground = this.add.graphics();
     const { x, y } = cellCenter(this.start);
-    this.marker = this.add.circle(x, y, CELL_SIZE * 0.35, MARKER_COLOR);
+    this.marker = this.add.rectangle(
+      x,
+      y,
+      CELL_SIZE,
+      CELL_SIZE,
+      MARKER_COLOR,
+    );
     this.cameras.main.startFollow(this.marker, true, 0.2, 0.2);
     this.drawCellsAround(this.start);
     this.fitToDisplay();
@@ -90,6 +96,10 @@ export class GridView extends Phaser.Scene {
         return this.walk(event.to);
       case "blocked":
         return this.bump(event.at, event.toward);
+      case "gathered":
+        return Promise.resolve();
+      case "empty":
+        return Promise.resolve();
       default:
         // A new event type fails to type-check here until it has a presentation.
         event satisfies never;

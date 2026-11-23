@@ -2,29 +2,38 @@
 // once, and the events it returns are a record of what happened. Whoever called
 // apply() decides how, or whether, to show them over time.
 
-import { isPassable, type Terrain, terrainAt } from "./terrain.ts";
+import {
+  isPassable,
+  type Terrain,
+  terrainAt,
+  terrainYields,
+} from "./terrain.ts";
 
 export type Cell = { x: number; y: number };
 
 export type Direction = "north" | "south" | "east" | "west";
-
-export type ItemType = "string" | "wood" | "leather" | "iron";
 
 // Plain data that survives JSON. Terrain is absent because the seed can recompute
 // it: besides the seed, only what the player has caused belongs here.
 export type GameState = {
   seed: number;
   player: Cell;
-  inventory: Record<ItemType, number>;
+  inventory: Record<string, number>;
+  gatheredCells: Record<string, Cell>;
 };
 
 // Command: https://gameprogrammingpatterns.com/command.html
-export type Command = { type: "move"; direction: Direction };
+export type Command = {
+  type: "move" | "gather";
+  direction: Direction;
+};
 
 // Domain Event: https://martinfowler.com/eaaDev/DomainEvent.html
 export type GameEvent =
   | { type: "moved"; from: Cell; to: Cell }
-  | { type: "blocked"; at: Cell; toward: Cell; terrain: Terrain };
+  | { type: "blocked"; at: Cell; toward: Cell; terrain: Terrain }
+  | { type: "gathered"; at: Cell; terrain: Terrain }
+  | { type: "empty"; at: Cell };
 
 const STEPS: Record<Direction, Cell> = {
   north: { x: 0, y: -1 },
@@ -33,16 +42,9 @@ const STEPS: Record<Direction, Cell> = {
   west: { x: -1, y: 0 },
 };
 
-const initInventory: Record<ItemType, number> = {
-  string: 0,
-  wood: 0,
-  leather: 0,
-  iron: 0,
-};
-
 // Singleton, avoided on purpose: tests make as many games as they need. https://gameprogrammingpatterns.com/singleton.html
 export function newGame(seed: number): GameState {
-  return { seed, player: { x: 0, y: 0 }, inventory: initInventory };
+  return { seed, player: { x: 0, y: 0 }, inventory: {}, gatheredCells: {} };
 }
 
 // The single way in. It updates the state it is given and returns the events.
@@ -50,6 +52,8 @@ export function apply(state: GameState, command: Command): GameEvent[] {
   switch (command.type) {
     case "move":
       return move(state, command.direction);
+    case "gather":
+      return gather(state);
   }
 }
 
@@ -68,4 +72,28 @@ function move(state: GameState, direction: Direction): GameEvent[] {
   state.player.x = to.x;
   state.player.y = to.y;
   return [{ type: "moved", from, to }];
+}
+
+function gather(state: GameState): GameEvent[] {
+  const cell = { ...state.player };
+  const cellTrait = isCellEmpty(state, cell);
+
+  if (cellTrait === "empty") {
+    return [{ type: "empty", at: cell }];
+  }
+  const item = terrainYields[cellTrait];
+  state.inventory[item] = (state.inventory[item] ?? 0) + 1;
+  state.gatheredCells[cellKey(cell)] = cell;
+  return [{ type: "gathered", at: cell, terrain: cellTrait }];
+}
+
+function cellKey(cell: Cell): string {
+  return (cell.x + ", " + cell.y);
+}
+
+function isCellEmpty(state: GameState, cell: Cell): Terrain | "empty" {
+  if (cellKey(cell) in state.gatheredCells) {
+    return ("empty");
+  }
+  return terrainAt(state.seed, cell.x, cell.y);
 }

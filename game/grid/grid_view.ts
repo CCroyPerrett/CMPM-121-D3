@@ -10,7 +10,7 @@ const VIEW_WIDTH = 800;
 const VIEW_HEIGHT = 600;
 const WALK_MS = 120;
 const BUMP_MS = 60;
-const MARKER_COLOR = 0xba8f4f; // #f5e6a8 #ba8f4f
+const MARKER_COLOR = 0xba8f4f;
 const BUMP_COLOR = 0xe0533d;
 export const iteminventory = { string: 0, wood: 0, leather: 0, iron: 0 };
 
@@ -21,10 +21,10 @@ interface spaces {
 const spaceswithoutitems: spaces[] = [];
 
 const TERRAIN_COLORS: Record<Terrain, number> = {
-  grass: 0x5d9e4a,
-  forest: 0x2f6b3a,
-  water: 0x2d5f9e,
-  rock: 0x6e6a66,
+  grass: 0xbf87ff, // 0x5d9e4a // #a86cec #487d82 #6d4276
+  forest: 0xa86cec, // 0x2f6b3a
+  water: 0x487d82, // 0x2d5f9e
+  rock: 0x6d4276, // 0x6e6a66
 };
 
 // Enough cells to cover the view, plus a margin so that the camera can lag behind
